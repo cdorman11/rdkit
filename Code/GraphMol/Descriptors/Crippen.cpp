@@ -37,26 +37,26 @@ void getCrippenAtomContribs(const ROMol &mol, std::vector<double> &logpContribs,
                             std::vector<double> &mrContribs, bool force,
                             std::vector<unsigned int> *atomTypes,
                             std::vector<std::string> *atomTypeLabels) {
-  PRECONDITION(logpContribs.size() == mol.getNumAtoms() &&
-                   mrContribs.size() == mol.getNumAtoms(),
+  PRECONDITION(logpContribs.size() == mol.GetNumAtoms() &&
+                   mrContribs.size() == mol.GetNumAtoms(),
                "bad result vector size");
-  PRECONDITION((!atomTypes || atomTypes->size() == mol.getNumAtoms()),
+  PRECONDITION((!atomTypes || atomTypes->size() == mol.GetNumAtoms()),
                "bad atomTypes vector");
-  PRECONDITION((!atomTypeLabels || atomTypeLabels->size() == mol.getNumAtoms()),
+  PRECONDITION((!atomTypeLabels || atomTypeLabels->size() == mol.GetNumAtoms()),
                "bad atomTypeLabels vector");
   if (!force && mol.hasProp(common_properties::_crippenLogPContribs)) {
     std::vector<double> tmpVect1, tmpVect2;
     mol.getProp(common_properties::_crippenLogPContribs, tmpVect1);
     mol.getProp(common_properties::_crippenMRContribs, tmpVect2);
-    if (tmpVect1.size() == mol.getNumAtoms() &&
-        tmpVect2.size() == mol.getNumAtoms()) {
+    if (tmpVect1.size() == mol.GetNumAtoms() &&
+        tmpVect2.size() == mol.GetNumAtoms()) {
       logpContribs = tmpVect1;
       mrContribs = tmpVect2;
       return;
     }
   }
 
-  boost::dynamic_bitset<> atomNeeded(mol.getNumAtoms());
+  boost::dynamic_bitset<> atomNeeded(mol.GetNumAtoms());
   atomNeeded.set();
   const CrippenParamCollection *params = CrippenParamCollection::getParams();
   for (const auto &param : *params) {
@@ -99,8 +99,8 @@ void calcCrippenDescriptors(const ROMol &mol, double &logp, double &mr,
   if (includeHs) {
     workMol = MolOps::addHs(mol, false, false);
   }
-  std::vector<double> logpContribs(workMol->getNumAtoms());
-  std::vector<double> mrContribs(workMol->getNumAtoms());
+  std::vector<double> logpContribs(workMol->GetNumAtoms());
+  std::vector<double> mrContribs(workMol->GetNumAtoms());
   getCrippenAtomContribs(*workMol, logpContribs, mrContribs, force);
   logp = 0.0;
   for (std::vector<double>::const_iterator iter = logpContribs.begin();
